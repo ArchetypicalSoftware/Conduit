@@ -7,13 +7,14 @@ namespace Archetypical.Software
     {
         public static IApplicationBuilder UseConduit(this IApplicationBuilder builder)
         {
+            builder.UseSignalR(routes => { routes.MapHub<Conduit>("/conduit"); });
             return builder.UseMiddleware<ConduitMiddleware>();
         }
 
         public static void AddConduit(this IServiceCollection services)
         {
-            services.AddSignalRCore();
             services.Add(ServiceDescriptor.Singleton(provider => new Conduit(provider)));
+            services.AddSignalR();
         }
     }
 }

@@ -3,6 +3,7 @@ using Conduit.Tests.Website.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,8 +33,20 @@ namespace Conduit.Tests.Website
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            //services.AddDefaultIdentity<IdentityUser>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //services.AddAuthentication(o =>
+            //    {
+            //        o.DefaultScheme = IdentityConstants.ApplicationScheme;
+            //        o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            //    })
+            //    .AddIdentityCookies(o => { });
+
+            services.AddIdentity<IdentityUser, IdentityRole<string>>(o =>
+                     {
+                         o.Stores.MaxLengthForKeys = 128;
+                     })
+                    .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -57,7 +70,7 @@ namespace Conduit.Tests.Website
             app.UseAuthentication();
 
             app.UseConduit();
-
+            app.UseStaticFiles();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
