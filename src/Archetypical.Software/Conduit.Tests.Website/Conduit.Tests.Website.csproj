@@ -3,7 +3,12 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;net472</TargetFrameworks>
     <UserSecretsId>aspnet-Conduit.Tests.Website-2F8A5FE7-28C5-4878-85BA-3780F7F44843</UserSecretsId>
+    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\js\site.ts" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
@@ -29,5 +34,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Conduit\Conduit.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\js\site.ts" />
   </ItemGroup>
 </Project>

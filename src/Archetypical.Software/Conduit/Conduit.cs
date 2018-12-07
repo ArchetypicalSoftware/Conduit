@@ -67,6 +67,11 @@ namespace Archetypical.Software
             return base.OnConnectedAsync();
         }
 
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            return base.OnDisconnectedAsync(exception);
+        }
+
         internal List<IConduit> Children = new List<IConduit>();
         private IServiceProvider _provider;
 

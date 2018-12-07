@@ -1,11 +1,23 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-var connection = new signalR.HubConnectionBuilder().withUrl("/conduit").build();
-connection.start().catch(function (err) {
-    return console.error(err.toString());
-});
-connection.on("conduit", function (obj) {
-    console.log(obj);
-});
+var signalR;
+var Archetypical;
+(function (Archetypical) {
+    var Software;
+    (function (Software) {
+        var Conduit = /** @class */ (function () {
+            function Conduit() {
+                var _this = this;
+                this.connection = new signalR.HubConnectionBuilder().withUrl("/conduit").build();
+                this.connection.start().catch(function (err) { return console.error(err.toString()); });
+                this.connection.on("conduit", function (name, obj) {
+                    console.log(obj);
+                });
+                this.register = function (delegate) {
+                    _this.callbacks.push(delegate);
+                };
+            }
+            return Conduit;
+        }());
+        Software.Conduit = Conduit;
+    })(Software = Archetypical.Software || (Archetypical.Software = {}));
+})(Archetypical || (Archetypical = {}));
+//# sourceMappingURL=site.js.map
