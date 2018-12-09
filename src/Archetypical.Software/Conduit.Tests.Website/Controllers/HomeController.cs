@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Archetypical.Software;
 using Conduit.Tests.Website.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Conduit.Tests.Website.Controllers
 {
@@ -13,6 +10,12 @@ namespace Conduit.Tests.Website.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult Send(string something)
+        {
+            Conduit<SomeSubscriptionObject>.SendAsync(t => t.Sample.Equals(something), new SomePayload());
+            return Ok();
         }
 
         public IActionResult About()

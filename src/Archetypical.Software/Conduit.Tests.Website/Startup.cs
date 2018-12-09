@@ -69,7 +69,8 @@ namespace Conduit.Tests.Website
 
             app.UseAuthentication();
 
-            app.UseConduit();
+            app.UseConduit(opt => { opt.Conduit.AddFilter<SomeSubscriptionObject>(); });
+
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {
@@ -78,5 +79,16 @@ namespace Conduit.Tests.Website
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+    }
+
+    public class SomeSubscriptionObject
+    {
+        public string Sample { get; set; }
+    }
+
+    public class SomePayload
+    {
+        public string Msg { get; set; } =
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     }
 }
