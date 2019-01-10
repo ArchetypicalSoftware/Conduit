@@ -4,7 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 
-namespace Archetypical.Software
+namespace Archetypical.Software.Conduit
 {
     // By using a generic class we can take advantage
     // of the fact that .NET will create a new generic type

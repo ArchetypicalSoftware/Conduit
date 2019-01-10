@@ -45,6 +45,10 @@ TestResult.xml
 [Rr]eleasePS/
 dlldata.c
 
+node_modules/
+*.js
+*.js.map
+
 # Benchmark Results
 BenchmarkDotNet.Artifacts/
 

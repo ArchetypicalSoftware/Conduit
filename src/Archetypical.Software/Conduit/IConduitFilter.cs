@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace Archetypical.Software
+namespace Archetypical.Software.Conduit
 {
     public interface IConduitFilter
     {

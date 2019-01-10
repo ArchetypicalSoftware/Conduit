@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Archetypical.Software
+namespace Archetypical.Software.Conduit
 {
     public static class MiddlewareExtensions
     {

@@ -1,20 +1,27 @@
-﻿using Archetypical.Software;
+﻿using Archetypical.Software.Conduit;
 using Conduit.Tests.Website.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Conduit.Tests.Website.Controllers
 {
     public class HomeController : Controller
     {
+        Archetypical.Software.Conduit.Conduit _conduit;
+
+        public HomeController(Archetypical.Software.Conduit.Conduit injectedConduit)
+        {
+            _conduit = injectedConduit;   
+        }
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Send(string something)
+        public IActionResult TestFilter(string eventKey, string match, string message)
         {
-            Conduit<SomeSubscriptionObject>.SendAsync(t => t.Sample.Equals(something), new SomePayload());
+            Conduit<SomeSubscriptionObject>.SendAsync(eventKey, new SomePayload() { Msg = message }, t => !string.IsNullOrEmpty(t.Sample) && t.Sample.Equals(match));
             return Ok();
         }
 
@@ -41,6 +48,12 @@ namespace Conduit.Tests.Website.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult TestConduitPlain(string eventKey, string message)
+        {
+            _conduit.SendAsync(eventKey, message);
+            return Ok();
         }
     }
 }

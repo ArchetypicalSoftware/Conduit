@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace Archetypical.Software
+namespace Archetypical.Software.Conduit
 {
     public class ConduitMiddleware
     {

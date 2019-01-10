@@ -1,0 +1,29 @@
+{
+  "name": "@archetypical/conduit",
+  "version": "1.0.0",
+  "description": "JavaScript client for Conduit",
+  "private": true,
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "webpack",
+    "test": "jest --config jestconfig.json",
+    "compile": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json"
+  },
+  "author": {
+    "name": "Archetypical Software"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^1.15.3",
+    "ts-loader": "^5.3.2",
+    "tslint": "^5.12.0",
+    "tslint-config-prettier": "^1.17.0",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "@aspnet/signalr": "^1.1.0"
+  }
+}
