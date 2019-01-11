@@ -50,7 +50,7 @@ namespace Archetypical.Software.Conduit
 
             var eventKey = typeof(TFilter).Name;
 
-            Conduit.FilterActions.TryAdd(eventKey, (dynamic, connectionId) =>
+            _conduit.FilterActions.Add(eventKey, (dynamic, connectionId) =>
             {
                 var mappedFilter = Mapper<TFilter>.Map(dynamic) as TFilter;
                 var pair = new ConnectionFilterPair(connectionId, mappedFilter);
@@ -88,10 +88,10 @@ namespace Archetypical.Software.Conduit
         /// <param name="payload"></param>
         /// <param name="clientSelector"></param>
         /// <returns></returns>
-        public static Task SendAsync(string eventKey, object payload, Predicate<TFilter> clientSelector = null)
+        public static Task SendAsync<TPayload>(Predicate<TFilter> clientSelector, TPayload payload)
         {
             var filterType = typeof(TFilter).Name;
-            if(!Conduit.FilterActions.ContainsKey(filterType))
+            if(!_conduit.FilterActions.ContainsKey(filterType))
             {
                 throw new NotSupportedException($"There is no Conduit<{filterType}> registered on the server");
             }
@@ -107,7 +107,7 @@ namespace Archetypical.Software.Conduit
                 {
                     var wrapper = new Conduit.ConduitPayloadWrapper()
                     {
-                        EventKey = eventKey,
+                        EventKey = typeof(TPayload).Name,
                         Message = payload
                     };
 
@@ -116,7 +116,7 @@ namespace Archetypical.Software.Conduit
             }
             else
             {
-                return _conduit.SendAsync(eventKey, payload);
+                return _conduit.SendAsync(typeof(TPayload).Name, payload);
             }
 
             return Task.CompletedTask;
@@ -142,7 +142,7 @@ namespace Archetypical.Software.Conduit
 
         #endregion
 
-        protected internal static ConcurrentDictionary<string, Action<dynamic, string>> FilterActions = new ConcurrentDictionary<string, Action<dynamic, string>>(StringComparer.CurrentCultureIgnoreCase);
+        protected internal Dictionary<string, Action<dynamic, string>> FilterActions = new Dictionary<string, Action<dynamic, string>>(StringComparer.CurrentCultureIgnoreCase);
 
         internal List<IConduit> Children = new List<IConduit>();
 

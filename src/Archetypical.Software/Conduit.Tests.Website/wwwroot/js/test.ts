@@ -1,5 +1,7 @@
 import { Conduit, IConduitCallback } from "@archetypical/conduit"
 
+(window as any).conduit = Conduit;
+
 interface SomePayload {
     msg: string;
 }
@@ -18,7 +20,7 @@ async function FilterSuccessTest() {
     const cb: IConduitCallback<SomePayload> = x => console.log(x.msg);
     console.log("Test: FilterSuccess");
     const conduit = new Conduit();
-    const id = await conduit.subscribe("FilterSuccess", cb);
+    const id = await conduit.subscribe("SomePayload", cb);
     await conduit.applyFilter('SomeSubscriptionObject', { Sample: 'SampleValue' });
     await fetch('/Home/TestFilter?eventKey=FilterSuccess&match=SampleValue&message=FilterSuccess responded');
     conduit.close();
@@ -29,7 +31,7 @@ async function FilterMissTest() {
     const cb: IConduitCallback<SomePayload> = x => { throw Error(x.msg) };
     console.log("Test: FilterMiss");
     const conduit = new Conduit();
-    const id = await conduit.subscribe("FilterMiss", cb);    
+    const id = await conduit.subscribe("SomePayload", cb);    
     await conduit.applyFilter('SomeSubscriptionObject', { Sample: 'SampleValue' });
     await fetch('/Home/TestFilter?eventKey=FilterMiss&match=DifferentValue&message=You should not see me!');
     conduit.close();

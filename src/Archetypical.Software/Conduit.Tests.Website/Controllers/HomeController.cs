@@ -21,7 +21,7 @@ namespace Conduit.Tests.Website.Controllers
 
         public IActionResult TestFilter(string eventKey, string match, string message)
         {
-            Conduit<SomeSubscriptionObject>.SendAsync(eventKey, new SomePayload() { Msg = message }, t => !string.IsNullOrEmpty(t.Sample) && t.Sample.Equals(match));
+            Conduit<SomeSubscriptionObject>.SendAsync(t => !string.IsNullOrEmpty(t.Sample) && t.Sample.Equals(match), new SomePayload() { Msg = message });
             return Ok();
         }
 
