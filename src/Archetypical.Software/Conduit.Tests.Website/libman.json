@@ -9,6 +9,11 @@
         "dist/browser/signalr.js",
         "dist/browser/signalr.min.js"
       ]
+    },
+    {
+      "provider": "filesystem",
+      "library": "../Conduit.Client/lib/",
+      "destination": "wwwroot/lib/conduit/"
     }
   ]
 }

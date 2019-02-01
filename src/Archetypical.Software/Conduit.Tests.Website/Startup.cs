@@ -71,7 +71,10 @@ namespace Conduit.Tests.Website
 
             app.UseConduit(opt => { opt.Conduit.AddFilter<SomeSubscriptionObject>(); });
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                ServeUnknownFileTypes = true
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

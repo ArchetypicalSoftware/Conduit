@@ -1,6 +1,13 @@
-import * as signalR from '@aspnet/signalr';
+import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from '@aspnet/signalr';
 
 export type IConduitCallback<T> = (message: T) => void;
+
+export interface IConduitConfig {
+  host?: string;
+  logLevel?: LogLevel;
+  retryInterval?: number;
+  maxConnectionAttempts?: number;
+}
 
 interface IConduitPayload {
   eventKey: string;
@@ -24,38 +31,32 @@ interface ISubscription {
   eventKey: string;
 }
 
-function find<T>(array: T[], predicate: (element: T) => boolean): T | null {
-  let first: T | null = null;
-  array.every((x: T) => {
-    if (predicate(x)) {
-      first = x;
-      return false;
-    }
-
-    return true;
-  });
-
-  return first;
-}
-
 export class Conduit {
+  private config: IConduitConfig;
   private connectionPromise: Promise<void> | null;
-  private connection: signalR.HubConnection | null;
+  private connection: HubConnection | null;
   private eventHandlers: IConduitEventHandler[];
   private id: number;
-  private logLevel: signalR.LogLevel;
-  private host: string;
   private closedByUser: boolean;
   private filters: IFilter[];
   private subscriptions: ISubscription[];
 
-  constructor(host: string | null = null, logLevel: signalR.LogLevel = signalR.LogLevel.Error) {
+  constructor(config: IConduitConfig | null = null) {
+    this.config = Object.assign(
+      {},
+      {
+        host: '',
+        logLevel: LogLevel.Error,
+        maxConnectionAttempts: 5,
+        retryInterval: 5000,
+      },
+      config,
+    );
+
     this.connectionPromise = null;
     this.connection = null;
     this.eventHandlers = [];
     this.id = 1;
-    this.logLevel = logLevel;
-    this.host = host || '';
     this.closedByUser = false;
     this.filters = [];
     this.subscriptions = [];
@@ -100,7 +101,7 @@ export class Conduit {
       throw new Error('filter must be a valid object');
     }
 
-    let entry = find(this.filters, x => x.filterName === filterName);
+    let entry = this.filters.find(x => x.filterName === filterName);
 
     if (!entry) {
       entry = {
@@ -144,7 +145,7 @@ export class Conduit {
 
   public isConnected(): boolean {
     if (this.connection) {
-      return this.connection.state === signalR.HubConnectionState.Connected;
+      return this.connection.state === HubConnectionState.Connected;
     }
 
     return false;
@@ -152,9 +153,9 @@ export class Conduit {
 
   private async start() {
     if (this.connectionPromise === null) {
-      this.connection = new signalR.HubConnectionBuilder()
-        .withUrl(`${this.host}/conduit`)
-        .configureLogging(this.logLevel)
+      this.connection = new HubConnectionBuilder()
+        .withUrl(`${this.config.host}/conduit`)
+        .configureLogging(this.config.logLevel!)
         .build();
 
       this.connection.on('conduit', this.pushHandler);
@@ -168,19 +169,43 @@ export class Conduit {
       });
 
       try {
-        this.connectionPromise = this.connection.start();
-        await this.connectionPromise;
-        await this.processQueue();
-      } catch (err) {
+        this.connectionPromise = new Promise(async (resolve, reject) => {
+          await this.connect(
+            resolve,
+            reject,
+            0,
+          );
+        });
+      } catch {
+        if (this.connection) {
+          this.connection = null;
+        }
         this.connectionPromise = null;
-        // tslint:disable-next-line:no-console
-        console.log('conduit: ' + err);
-
-        setTimeout(() => this.start(), 5000);
       }
     }
 
     return this.connectionPromise;
+  }
+
+  private async connect(resolve: () => void, reject: () => void, attemptCount: number) {
+    try {
+      await this.connection!.start();
+      resolve();
+    } catch (err) {
+      if (attemptCount === this.config.maxConnectionAttempts) {
+        reject();
+      }
+
+      setTimeout(
+        () =>
+          this.connect(
+            resolve,
+            reject,
+            attemptCount + 1,
+          ),
+        this.config.retryInterval,
+      );
+    }
   }
 
   private async processQueue() {
@@ -193,14 +218,13 @@ export class Conduit {
           await this.connection!.invoke('ApplyFilter', x.filterName, x.filter);
         } catch {
           x.isSent = false;
-          // tslint:disable-next-line:no-empty
         }
       });
 
       // Subscriptions
       const subscriptionsToSend = this.subscriptions.filter(x => !x.isSent);
       subscriptionsToSend.forEach(async x => {
-        if (find(this.subscriptions, y => y.eventKey === x.eventKey && y.isSent)) {
+        if (this.subscriptions.filter(y => y.eventKey === x.eventKey && y.isSent).length) {
           x.isSent = true;
         } else {
           try {
@@ -222,14 +246,7 @@ export class Conduit {
     const handlers = this.eventHandlers.filter(x => x.eventKey === eventKey);
 
     if (handlers) {
-      handlers.forEach(x => {
-        try {
-          x.callback(message);
-        } catch (err) {
-          // tslint:disable-next-line:no-console
-          console.log('conduit: ' + err);
-        }
-      });
+      handlers.forEach(x => x.callback(message));
     }
   };
 }

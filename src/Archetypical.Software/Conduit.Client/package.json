@@ -8,14 +8,18 @@
   "scripts": {
     "compile": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
+    "lint": "tslint -p tsconfig.json",
+    "test": "jest -c jestconfig.json"
   },
   "author": {
     "name": "Archetypical Software"
   },
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^23.3.13",
+    "jest": "^23.6.0",
     "prettier": "^1.15.3",
+    "ts-jest": "^23.10.5",
     "ts-loader": "^5.3.2",
     "tslint": "^5.12.0",
     "tslint-config-prettier": "^1.17.0",
@@ -23,5 +27,8 @@
   },
   "dependencies": {
     "@aspnet/signalr": "^1.1.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
