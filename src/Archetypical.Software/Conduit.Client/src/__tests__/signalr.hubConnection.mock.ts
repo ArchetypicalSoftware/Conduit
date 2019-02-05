@@ -1,14 +1,14 @@
 import { HubConnectionState } from '@aspnet/signalr';
 
 export class MockHubConnectionBuilder {
-  public build = jest.fn(() => this._connection);
+  public build = jest.fn(() => this.connection);
   public configureLogging = jest.fn(() => this);
   public withUrl = jest.fn(() => this);
 
-  private _connection: MockHubConnection;
+  private connection: MockHubConnection;
 
   constructor(connection: MockHubConnection) {
-    this._connection = connection;
+    this.connection = connection;
   }
 }
 
@@ -19,4 +19,5 @@ export class MockHubConnection {
   public start = jest.fn(() => Promise.resolve());
   public invoke = jest.fn();
   public state = HubConnectionState.Connected;
+  public stop = jest.fn(() => Promise.resolve());
 }

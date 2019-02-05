@@ -4,7 +4,7 @@ export declare class MockHubConnectionBuilder {
     build: jest.Mock<MockHubConnection>;
     configureLogging: jest.Mock<this>;
     withUrl: jest.Mock<this>;
-    private _connection;
+    private connection;
     constructor(connection: MockHubConnection);
 }
 export declare class MockHubConnection {

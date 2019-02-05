@@ -21,7 +21,7 @@
     "webpack-cli": "3.0.6"
   },
   "scripts": {
-    "build": "webpack --config webpack.test.config.js --env dev"
+    "build": "webpack --config webpack.config.js --env dev"
   },
   "author": "",
   "license": "ISC"
