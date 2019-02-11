@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace Conduit.Tests
 {
-    class XunitLoggerProvider :ILoggerProvider
+    class XunitLoggerProvider : ILoggerProvider
     {
         private ITestOutputHelper _outputHelper;
         public XunitLoggerProvider(ITestOutputHelper outputHelper)

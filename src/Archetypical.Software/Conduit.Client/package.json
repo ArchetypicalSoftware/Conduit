@@ -2,19 +2,19 @@
   "name": "@archetypical/conduit",
   "version": "1.0.0",
   "description": "JavaScript client for Conduit",
-  "private": true,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
-    "test": "jest -c jestconfig.json"
+    "test": "jest -c jestconfig.json",
+    "prepare": "npm run build && npm run lint",
+    "prepublishOnly": "npm test"
   },
   "author": {
     "name": "Archetypical Software"
   },
-  "license": "ISC",
+  "license": "GNU",
   "devDependencies": {
     "@types/jest": "^23.3.13",
     "jest": "^23.6.0",
@@ -26,9 +26,21 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "@archetypical/auto-hub-connection": "^1.0.2",
     "@aspnet/signalr": "^1.1.0"
   },
   "jest": {
     "testEnvironment": "node"
-  }
+  },
+  "files": [
+    "lib/**/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArchetypicalSoftware/Conduit"
+  },
+  "homepage": "https://github.com/ArchetypicalSoftware/Conduit",
+  "typings": "./lib/index.d.ts"
 }

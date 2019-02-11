@@ -10,11 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conduit.Tests", "Conduit.Tests\Conduit.Tests.csproj", "{1D2D406B-8538-41B8-B99D-F971027C520C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conduit.Tests.Website", "Conduit.Tests.Website\Conduit.Tests.Website.csproj", "{53AA4F5A-A34D-4348-BBE4-AC109CBFC049}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F2E56E47-DD37-469E-9CB1-F066C2D0709B} = {F2E56E47-DD37-469E-9CB1-F066C2D0709B}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conduit.Client", "Conduit.Client\Conduit.Client.csproj", "{F2E56E47-DD37-469E-9CB1-F066C2D0709B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +29,6 @@ Global
 		{53AA4F5A-A34D-4348-BBE4-AC109CBFC049}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53AA4F5A-A34D-4348-BBE4-AC109CBFC049}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53AA4F5A-A34D-4348-BBE4-AC109CBFC049}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2E56E47-DD37-469E-9CB1-F066C2D0709B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2E56E47-DD37-469E-9CB1-F066C2D0709B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2E56E47-DD37-469E-9CB1-F066C2D0709B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2E56E47-DD37-469E-9CB1-F066C2D0709B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

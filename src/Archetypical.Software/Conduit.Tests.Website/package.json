@@ -5,6 +5,7 @@
   "main": "index.js",
   "private": true,
   "dependencies": {
+    "@archetypical/auto-hub-connection": "^1.0.1",
     "@archetypical/conduit": "file:../Conduit.Client",
     "@aspnet/signalr": "^1.1.0"
   },

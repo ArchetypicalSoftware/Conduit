@@ -98,25 +98,11 @@ namespace Archetypical.Software.Conduit
 
             IEnumerable<ConnectionFilterPair> query = ConnectionFilterMap.Values;
 
-            if (clientSelector != null)
-            {
-                query = query.Where(x => clientSelector(x.Filter));
+            var ids = query.Where(x => clientSelector(x.Filter)).Select(x => x.ConnectionId).ToList();
 
-                var ids = query.Select(x => x.ConnectionId).ToList();
-                if (ids.Any())
-                {
-                    var wrapper = new Conduit.ConduitPayloadWrapper()
-                    {
-                        EventKey = typeof(TPayload).Name,
-                        Message = payload
-                    };
-
-                    return _conduit.Clients?.Clients(ids).SendAsync("conduit", wrapper);
-                }
-            }
-            else
+            if (ids.Any())
             {
-                return _conduit.SendAsync(typeof(TPayload).Name, payload);
+                return _conduit.Clients?.Clients(ids).SendAsync(typeof(TPayload).Name, payload);
             }
 
             return Task.CompletedTask;
@@ -128,20 +114,6 @@ namespace Archetypical.Software.Conduit
     /// </summary>
     public class Conduit : Hub
     {
-        #region ConduitPayloadWrapper
-
-        /// <summary>
-        /// 
-        /// </summary>
-        internal class ConduitPayloadWrapper
-        {
-            public string EventKey { get; set; }
-
-            public object Message { get; set; }
-        }
-
-        #endregion
-
         protected internal Dictionary<string, Action<dynamic, string>> FilterActions = new Dictionary<string, Action<dynamic, string>>(StringComparer.CurrentCultureIgnoreCase);
 
         internal List<IConduit> Children = new List<IConduit>();
@@ -170,35 +142,6 @@ namespace Archetypical.Software.Conduit
         {
             Children.ForEach(conduit => conduit.OnContextDisconnectedAsync(Context));
             return base.OnDisconnectedAsync(exception);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="eventKey"></param>
-        /// <param name="payload"></param>
-        /// <returns></returns>
-        public Task SendAsync(string eventKey, object payload)
-        {
-            var wrapper = new ConduitPayloadWrapper()
-            {
-                EventKey = eventKey,
-                Message = payload
-            };
-
-            return Clients?.Group(eventKey).SendAsync("conduit", wrapper);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="eventKey"></param>
-        /// <returns></returns>
-        public Task SubscribeToEventAsync(string eventKey)
-        {
-            var connectionId = this.Context.ConnectionId;
-
-            return Groups.AddToGroupAsync(connectionId, eventKey);
         }
 
         /// <summary>

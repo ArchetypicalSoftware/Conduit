@@ -23,13 +23,8 @@ namespace Archetypical.Software.Conduit
             // At this point we can convert each
             // property name to lower case so we avoid
             // creating a new string more than once.
-            _propertyMap =
-                typeof(T)
-                    .GetProperties()
-                    .ToDictionary(
-                        p => p.Name.ToLower(),
-                        p => p
-                    );
+            _propertyMap = typeof(T).GetProperties()
+                .ToDictionary(p => p.Name.ToLower(), p => p);
         }
 
         public static T Map(ExpandoObject source)

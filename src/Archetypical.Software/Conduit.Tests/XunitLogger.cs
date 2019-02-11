@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace Conduit.Tests
 {
-    class XunitLogger: ILogger
+    class XunitLogger : ILogger
     {
         private ITestOutputHelper _outputHelper;
         public XunitLogger(ITestOutputHelper outputHelper)
@@ -20,8 +20,7 @@ namespace Conduit.Tests
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return true
-                ;
+            return true;
         }
 
         public IDisposable BeginScope<TState>(TState state)

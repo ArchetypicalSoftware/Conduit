@@ -49,11 +49,5 @@ namespace Conduit.Tests.Website.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        public IActionResult TestConduitPlain(string eventKey, string message)
-        {
-            _conduit.SendAsync(eventKey, message);
-            return Ok();
-        }
     }
 }

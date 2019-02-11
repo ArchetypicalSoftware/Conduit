@@ -1,28 +1,14 @@
-import { LogLevel } from '@aspnet/signalr';
+import { IConnectionConfig } from '@archetypical/auto-hub-connection';
 export declare type IConduitCallback<T> = (message: T) => void;
-export interface IConduitConfig {
-    host?: string;
-    logLevel?: LogLevel;
-    retryInterval?: number;
-    maxConnectionAttempts?: number;
-}
 export declare class Conduit {
-    private config;
-    private connectionPromise;
     private connection;
-    private eventHandlers;
-    private id;
-    private closedByUser;
     private filters;
-    private subscriptions;
-    constructor(config?: IConduitConfig | null);
-    subscribe<T>(eventKey: string, callback: IConduitCallback<T>): Promise<number>;
+    private hasSubscription;
+    constructor(config?: IConnectionConfig | null);
+    on<T>(payloadName: string, callback: (data: T) => void): Promise<void>;
+    off<T>(payloadName: string, callback?: (data: T) => void): void;
+    start(): Promise<void>;
+    stop(): Promise<void>;
     applyFilter(filterName: string, filter: object): Promise<void>;
-    unsubscribe(id: number): boolean;
-    close(): Promise<void>;
-    isConnected(): boolean;
-    private start;
-    private connect;
     private processQueue;
-    private pushHandler;
 }

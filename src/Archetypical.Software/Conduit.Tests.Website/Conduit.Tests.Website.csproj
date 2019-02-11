@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>aspnet-Conduit.Tests.Website-2F8A5FE7-28C5-4878-85BA-3780F7F44843</UserSecretsId>
     <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>

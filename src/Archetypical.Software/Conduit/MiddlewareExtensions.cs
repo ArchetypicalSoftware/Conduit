@@ -13,6 +13,7 @@ namespace Archetypical.Software.Conduit
             {
                 routes.MapHub<Conduit>("/conduit");
             });
+
             var opt = new ConduitOptions { Conduit = builder.ApplicationServices.GetService<Conduit>() };
             options(opt);
             return builder.UseMiddleware<ConduitMiddleware>();

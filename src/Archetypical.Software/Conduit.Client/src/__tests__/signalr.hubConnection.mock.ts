@@ -16,8 +16,11 @@ export class MockHubConnectionBuilder {
 export class MockHubConnection {
   public on = jest.fn();
   public onclose = jest.fn();
-  public start = jest.fn(() => Promise.resolve());
+  public start = jest.fn(() => {
+    this.state = HubConnectionState.Connected;
+    return Promise.resolve();
+  });
   public invoke = jest.fn();
-  public state = HubConnectionState.Connected;
+  public state = HubConnectionState.Disconnected;
   public stop = jest.fn(() => Promise.resolve());
 }
