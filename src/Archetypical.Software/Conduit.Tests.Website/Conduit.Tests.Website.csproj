@@ -57,7 +57,7 @@
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="npm install --save ../Conduit.Client&#xD;&#xA;npm install" />
+    <Exec Command="npm install" />
   </Target>
 
 </Project>
