@@ -5,8 +5,7 @@
         <version>$version$</version>
         <authors>Archetypical.Software</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>
-                   </description>
+        <description>Conduit connects browsers and .NET Core applications via signalR utilizing strongly typed payloads and enables server-side message filtering based upon client data.</description>
         <dependencies>
             <dependency id="Microsoft.Extensions.Logging" version="2.1.1" />
        </dependencies>
