@@ -53,11 +53,11 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="npm run build" />
+    <Exec Command="yarn run build" />
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="npm install" />
+    <Exec Command="yarn install" />
   </Target>
 
 </Project>

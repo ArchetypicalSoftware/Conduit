@@ -8,13 +8,13 @@
     "build": "tsc",
     "lint": "tslint -p tsconfig.json",
     "test": "jest -c jestconfig.json",
-    "prepare": "npm run build && npm run lint",
-    "prepublishOnly": "npm test"
+    "prepare": "yarn run build && yarn run lint",
+    "prepublishOnly": "yarn test"
   },
   "author": {
     "name": "Archetypical Software"
   },
-  "license": "GNU",
+  "license": "LGPL-3.0-or-later",
   "devDependencies": {
     "@types/jest": "^23.3.13",
     "jest": "^23.6.0",
