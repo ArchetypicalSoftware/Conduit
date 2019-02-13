@@ -57,7 +57,7 @@
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="yarn install" />
+    <Exec Command="yarn --force" />
   </Target>
 
 </Project>
