@@ -9,13 +9,20 @@ namespace Archetypical.Software.Conduit
     {
         public static IApplicationBuilder UseConduit(this IApplicationBuilder builder, Action<ConduitOptions> options)
         {
+            var opt = new ConduitOptions { Conduit = builder.ApplicationServices.GetService<Conduit>() };
+
+            options(opt);
+
+            opt.Conduit.CleanupTaskInterval = opt.CleanupTaskInterval;
+            opt.Conduit.MaxConnectionLifetime = opt.MaxConnectionLifetime;
+
             builder.UseSignalR(routes =>
             {
                 routes.MapHub<Conduit>("/conduit");
             });
 
-            var opt = new ConduitOptions { Conduit = builder.ApplicationServices.GetService<Conduit>() };
-            options(opt);
+            opt.Conduit.Start();
+
             return builder.UseMiddleware<ConduitMiddleware>();
         }
 
@@ -37,5 +44,9 @@ namespace Archetypical.Software.Conduit
     public class ConduitOptions
     {
         public Conduit Conduit { get; set; }
+
+        public TimeSpan MaxConnectionLifetime { get; set; } = TimeSpan.FromDays(1);
+
+        public TimeSpan CleanupTaskInterval { get; set; } = TimeSpan.FromHours(1);
     }
 }

@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System;
 
 namespace Archetypical.Software.Conduit
 {
     internal interface IConduit
     {
-        void OnContextConnectedAsync(HubCallerContext context);
+        void OnConnectedAsync(HubCallerContext context);
 
-        void OnContextDisconnectedAsync(HubCallerContext context);
+        void OnDisconnectedAsync(HubCallerContext context);
+
+        void Cleanup(TimeSpan maxConnectionLifetime);
     }
 }

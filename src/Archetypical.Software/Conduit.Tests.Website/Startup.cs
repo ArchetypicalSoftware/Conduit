@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Conduit.Tests.Website
 {
@@ -69,7 +70,11 @@ namespace Conduit.Tests.Website
 
             app.UseAuthentication();
 
-            app.UseConduit(opt => { opt.Conduit.AddFilter<SomeSubscriptionObject>(); });
+            app.UseConduit(options => {
+                options.Conduit.AddFilter<SomeSubscriptionObject>();
+                options.CleanupTaskInterval = TimeSpan.FromMinutes(1);
+                options.MaxConnectionLifetime = TimeSpan.FromMinutes(10);
+            });
 
             app.UseStaticFiles(new StaticFileOptions()
             {

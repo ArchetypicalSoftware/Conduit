@@ -1,6 +1,6 @@
 {
   "name": "@archetypical/conduit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript client for Conduit",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,6 +14,7 @@
   "author": {
     "name": "Archetypical Software"
   },
+  "displayName": "Conduit Client",
   "license": "LGPL-3.0-or-later",
   "devDependencies": {
     "@types/jest": "^23.3.13",
@@ -25,6 +26,15 @@
     "tslint-config-prettier": "^1.17.0",
     "typescript": "^3.2.2"
   },
+  "keywords": [
+    "SignalR",
+    "Filter",
+    "Archetypical",
+    "ArchetypicalSoftware",
+    "HubConnection",
+    "Hub",
+    "Filtered"
+  ],
   "dependencies": {
     "@archetypical/auto-hub-connection": "^1.0.2",
     "@aspnet/signalr": "^1.1.0"

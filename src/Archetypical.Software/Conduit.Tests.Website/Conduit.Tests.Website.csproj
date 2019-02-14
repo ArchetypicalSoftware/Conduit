@@ -53,11 +53,11 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="yarn run build" />
+    <Exec Command="if $(ConfigurationName) == Release yarn run build" />
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="yarn --force" />
+    <Exec Command="if $(ConfigurationName) == Release yarn --force&#xD;&#xA;" />
   </Target>
 
 </Project>

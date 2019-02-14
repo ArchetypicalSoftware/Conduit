@@ -17,17 +17,19 @@ namespace Archetypical.Software.Conduit
         #region ConnectionFilterPair
 
         /// <summary>
-        /// 
+        /// POCO to house the connnection filter data
         /// </summary>
-        protected class ConnectionFilterPair
+        private class ConnectionFilterPair
         {
             public ConnectionFilterPair(string connectionId, TFilter filter)
             {
                 ConnectionId = connectionId;
                 Filter = filter;
+                CreatedDate = DateTime.Now; 
             }
 
             public string ConnectionId { get; }
+            public DateTime CreatedDate { get; }
             public TFilter Filter { get; set; }
         }
 
@@ -39,10 +41,10 @@ namespace Archetypical.Software.Conduit
         private IConduitFilter<TFilter> FilterFactory { get; }
 
         /// <summary>
-        /// 
+        /// Constructor
         /// </summary>
-        /// <param name="filterFactory"></param>
-        /// <param name="conduit"></param>
+        /// <param name="filterFactory">Filter factory that creates object to evaluate</param>
+        /// <param name="conduit">Conduit instance</param>
         public Conduit(IConduitFilter<TFilter> filterFactory, Conduit conduit)
         {
             FilterFactory = filterFactory;
@@ -59,10 +61,10 @@ namespace Archetypical.Software.Conduit
         }
 
         /// <summary>
-        /// 
+        /// OnConnected handler
         /// </summary>
-        /// <param name="context"></param>
-        public void OnContextConnectedAsync(HubCallerContext context)
+        /// <param name="context">The connection context</param>
+        public void OnConnectedAsync(HubCallerContext context)
         {
             if (FilterFactory != null)
             {
@@ -73,20 +75,19 @@ namespace Archetypical.Software.Conduit
         }
 
         /// <summary>
-        /// 
+        /// OnDisconnected handler
         /// </summary>
-        /// <param name="context"></param>
-        public void OnContextDisconnectedAsync(HubCallerContext context)
+        /// <param name="context">The connection context</param>
+        public void OnDisconnectedAsync(HubCallerContext context)
         {
             ConnectionFilterMap.TryRemove(context.ConnectionId, out ConnectionFilterPair value);
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="eventKey"></param>
-        /// <param name="payload"></param>
-        /// <param name="clientSelector"></param>
+        /// Call to send a payload to a filtered set of connected users
+        /// </summary>        
+        /// <param name="clientSelector">Predicate used to filter which users to send a payload to</param>
+        /// <param name="payload">The payload object to send. The payload class name (not full name) will be the methodName client-side.</param>
         /// <returns></returns>
         public static Task SendAsync<TPayload>(Predicate<TFilter> clientSelector, TPayload payload)
         {
@@ -107,6 +108,27 @@ namespace Archetypical.Software.Conduit
 
             return Task.CompletedTask;
         }
+        
+        /// <summary>
+        /// Cleans up any connections that have existed outside the max connection lifetime
+        /// </summary>
+        /// <param name="maxConnectionLifetime">Max lifetime of the connection</param>
+        public void Cleanup(TimeSpan maxConnectionLifetime)
+        {
+            var keys = ConnectionFilterMap.Keys;
+            var now = DateTime.Now;
+
+            foreach (var key in keys)
+            {
+                if (ConnectionFilterMap.TryGetValue(key, out var pair))
+                {
+                    if (now - pair.CreatedDate > maxConnectionLifetime)
+                    {
+                        ConnectionFilterMap.TryRemove(key, out pair);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -114,38 +136,72 @@ namespace Archetypical.Software.Conduit
     /// </summary>
     public class Conduit : Hub
     {
-        protected internal Dictionary<string, Action<dynamic, string>> FilterActions = new Dictionary<string, Action<dynamic, string>>(StringComparer.CurrentCultureIgnoreCase);
-
         internal List<IConduit> Children = new List<IConduit>();
 
         /// <summary>
-        /// 
+        /// Dictionary of filter actions to be called on a new filter from client-side
+        /// </summary>
+        protected internal Dictionary<string, Action<dynamic, string>> FilterActions = new Dictionary<string, Action<dynamic, string>>(StringComparer.CurrentCultureIgnoreCase);        
+
+        /// <summary>
+        /// The max lifetime of a connection to monitor
+        /// </summary>
+        protected internal TimeSpan MaxConnectionLifetime { get; set; }
+
+        /// <summary>
+        /// How frequently to call Cleanup
+        /// </summary>
+        protected internal TimeSpan CleanupTaskInterval { get; set; }
+
+        private Task CleanUpTask { get; set; }
+
+        /// <summary>
+        /// Constructor
         /// </summary>
         public Conduit() { }
 
         /// <summary>
-        /// 
+        /// Initiates the Cleanup task. This is only here to clean up closed connections that don't call OnDisconnectedAsync
+        /// </summary>
+        public void Start()
+        {
+            if(CleanUpTask == null)
+            {
+                CleanUpTask = Task.Run(async () =>
+                {
+                    while (true)
+                    {
+                        await Task.Delay(CleanupTaskInterval);
+
+                        Children.ForEach(conduit => conduit.Cleanup(MaxConnectionLifetime));
+                    }
+                });
+            }
+        }
+
+        /// <summary>
+        /// OnConnected handler
         /// </summary>
         /// <returns></returns>
         public override Task OnConnectedAsync()
         {
-            Children.ForEach(conduit => conduit.OnContextConnectedAsync(Context));
+            Children.ForEach(conduit => conduit.OnConnectedAsync(Context));
             return base.OnConnectedAsync();
         }
 
         /// <summary>
-        /// 
+        /// OnDisconnected handler
         /// </summary>
         /// <param name="exception"></param>
         /// <returns></returns>
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            Children.ForEach(conduit => conduit.OnContextDisconnectedAsync(Context));
+            Children.ForEach(conduit => conduit.OnDisconnectedAsync(Context));
             return base.OnDisconnectedAsync(exception);
         }
 
         /// <summary>
-        /// 
+        /// Applies a filter from client-side. Replaces any existng filter previously assigned.
         /// </summary>
         /// <param name="filterName"></param>
         /// <param name="filter"></param>
