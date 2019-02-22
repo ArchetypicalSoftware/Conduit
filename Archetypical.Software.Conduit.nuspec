@@ -10,6 +10,11 @@
         <dependencies>
             <dependency id="Microsoft.Extensions.Logging" version="2.1.1" />
        </dependencies>
+       <iconUrl>https://archetypical.software/images/conduit.png</iconUrl>
+       <copyright>© Archetypical Software. All rights reserved.</copyright>
+       <tags>Archetypical Software SignalR AspNetSignalR websockets real-time realtime typed filter filtered aspnetcore dotcore core</tags>
+       <repository type="git" url="https://github.com/ArchetypicalSoftware/Conduit" branch="master" />
+       <projectUrl>https://archetypical.software/Product/Detail/Conduit</projectUrl>
     </metadata>
     <files>
     <file src="src\Archetypical.Software\Conduit\bin\Release\netstandard2.0\Archetypical.Software.Conduit.dll" target="lib\netstandard2.0\Archetypical.Software.Conduit.dll" />

@@ -38,14 +38,14 @@ namespace Archetypical.Software.Conduit
         private static Conduit _conduit;
         private static ConcurrentDictionary<string, ConnectionFilterPair> ConnectionFilterMap = new ConcurrentDictionary<string, ConnectionFilterPair>();
 
-        private IConduitFilter<TFilter> FilterFactory { get; }
+        private IConduitFilterFactory<TFilter> FilterFactory { get; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="filterFactory">Filter factory that creates object to evaluate</param>
         /// <param name="conduit">Conduit instance</param>
-        public Conduit(IConduitFilter<TFilter> filterFactory, Conduit conduit)
+        public Conduit(IConduitFilterFactory<TFilter> filterFactory, Conduit conduit)
         {
             FilterFactory = filterFactory;
             _conduit = conduit;
@@ -68,7 +68,7 @@ namespace Archetypical.Software.Conduit
         {
             if (FilterFactory != null)
             {
-                var filter = FilterFactory.PopulateClient(context);
+                var filter = FilterFactory.Build(context);
                 var pair = new ConnectionFilterPair(context.ConnectionId, filter ?? new TFilter());
                 ConnectionFilterMap.TryAdd(context.ConnectionId, pair);
             }
@@ -163,7 +163,7 @@ namespace Archetypical.Software.Conduit
         /// <summary>
         /// Initiates the Cleanup task. This is only here to clean up closed connections that don't call OnDisconnectedAsync
         /// </summary>
-        public void Start()
+        public void StartCleanupTask()
         {
             if(CleanUpTask == null)
             {

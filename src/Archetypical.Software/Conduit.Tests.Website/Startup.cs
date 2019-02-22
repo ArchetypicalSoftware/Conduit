@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,11 +71,7 @@ namespace Conduit.Tests.Website
 
             app.UseAuthentication();
 
-            app.UseConduit(options => {
-                options.Conduit.AddFilter<SomeSubscriptionObject>();
-                options.CleanupTaskInterval = TimeSpan.FromMinutes(1);
-                options.MaxConnectionLifetime = TimeSpan.FromMinutes(10);
-            });
+            app.UseConduit(options => options.Conduit.AddFilter(new SomeSubscriptionObjectFactory()));
 
             app.UseStaticFiles(new StaticFileOptions()
             {
@@ -92,6 +89,15 @@ namespace Conduit.Tests.Website
     public class SomeSubscriptionObject
     {
         public string Sample { get; set; }
+    }
+
+    public class SomeSubscriptionObjectFactory : IConduitFilterFactory<SomeSubscriptionObject>
+    {
+        public SomeSubscriptionObject Build(HubCallerContext context)
+        {
+            // Logic to build 
+            return new SomeSubscriptionObject();
+        }
     }
 
     public class SomePayload

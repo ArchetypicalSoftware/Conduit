@@ -21,7 +21,10 @@ namespace Archetypical.Software.Conduit
                 routes.MapHub<Conduit>("/conduit");
             });
 
-            opt.Conduit.Start();
+            if(opt.CleanupTaskEnabled)
+            {
+                opt.Conduit.StartCleanupTask();
+            }            
 
             return builder.UseMiddleware<ConduitMiddleware>();
         }
@@ -48,5 +51,7 @@ namespace Archetypical.Software.Conduit
         public TimeSpan MaxConnectionLifetime { get; set; } = TimeSpan.FromDays(1);
 
         public TimeSpan CleanupTaskInterval { get; set; } = TimeSpan.FromHours(1);
+
+        public bool CleanupTaskEnabled { get; set; } = true;
     }
 }

@@ -4,15 +4,15 @@ namespace Archetypical.Software.Conduit
 {
     public static class Extension
     {
-        public static void AddFilter<T>(this Conduit src, IConduitFilter<T> filter = null) where T : class, new()
+        public static void AddFilter<T>(this Conduit src, IConduitFilterFactory<T> filter = null) where T : class, new()
         {
             src.Children.Add(new Conduit<T>(filter ?? new ClientInitiatedFilter<T>(), src));
         }
     }
 
-    public class ClientInitiatedFilter<T> : IConduitFilter<T> where T : class
+    public class ClientInitiatedFilter<T> : IConduitFilterFactory<T> where T : class
     {
-        public T PopulateClient(HubCallerContext context)
+        public T Build(HubCallerContext context)
         {
             return null;
         }
