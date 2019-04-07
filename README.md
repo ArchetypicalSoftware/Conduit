@@ -59,4 +59,4 @@ await conduit.applyFilter('UserAssetsToMonitor', {
 });
 ```
 
-Now your user will only get updates for the data they said they cared about!
+Now your user will only get updates for the data they said they cared about! 
