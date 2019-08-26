@@ -5,7 +5,7 @@ Conduit connects browsers and .NET Core applications utilizing strongly typed pa
 # Overview
 
 Conduit is a wrapper to Microsoft's .NET Core websocket implementation, SignalR. In addition to providing a lot of the same functionality of SignalR, Conduit enables you to filter which users receive your messages based upon their state and not by the specific group they have registered for. This is done by storing a POCO defined by you server side for each user connected to Conduit. Once you are ready to send a message, you provide a predicate to select the specific users you want to send the message to based upon their data. Furthermore, your filter object can be updated from browser side to allow for real-time updates to your filtering.
-
+ 
 ```cs
 public class UserAssetsToMonitor
 {
@@ -58,5 +58,5 @@ await conduit.applyFilter('UserAssetsToMonitor', {
     StockSymbols: ['MSFT']
 });
 ```
-
-Now your user will only get updates for the data they said they cared about!
+ 
+Now your user will only get updates for the data they said they cared about! 
