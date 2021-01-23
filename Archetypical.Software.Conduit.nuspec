@@ -17,7 +17,7 @@
        <projectUrl>https://archetypical.software/Product/Detail/Conduit</projectUrl>
     </metadata>
     <files>
-    <file src="src\Archetypical.Software\Conduit\bin\Release\netstandard2.0\Archetypical.Software.Conduit.dll" target="lib\netstandard2.0\Archetypical.Software.Conduit.dll" />
-    <file src="src\Archetypical.Software\Conduit\bin\Release\netstandard2.0\Archetypical.Software.Conduit.xml" target="lib\netstandard2.0\Archetypical.Software.Conduit.xml" />
+    <file src="src\Archetypical.Software\Conduit\bin\Release\netstandard2.1\Archetypical.Software.Conduit.dll" target="lib\netstandard2.1\Archetypical.Software.Conduit.dll" />
+    <file src="src\Archetypical.Software\Conduit\bin\Release\netstandard2.1\Archetypical.Software.Conduit.xml" target="lib\netstandard2.1\Archetypical.Software.Conduit.xml" />
    </files>
 </package>
