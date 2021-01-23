@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 
 namespace Archetypical.Software.Conduit
 {
@@ -41,35 +42,8 @@ namespace Archetypical.Software.Conduit
                 throw new ArgumentNullException("destination");
             }
 
-            // By iterating the KeyValuePair<string, object> of
-            // source we can avoid manually searching the keys of
-            // source as we see in your original code.
-            foreach (var kv in source)
-            {
-                PropertyInfo p;
-                if (_propertyMap.TryGetValue(kv.Key.ToLower(), out p))
-                {
-                    var propType = p.PropertyType;
-                    if (kv.Value == null)
-                    {
-                        if (!propType.IsByRef && propType.Name != "Nullable`1")
-                        {
-                            // Throw if type is a value type
-                            // but not Nullable<>
-                            throw new ArgumentException("not nullable");
-                        }
-                    }
-                    else if (kv.Value.GetType() != propType)
-                    {
-                        // You could make this a bit less strict
-                        // but I don't recommend it.
-                        throw new ArgumentException("type mismatch");
-                    }
-                    p.SetValue(destination, kv.Value, null);
-                }
-            }
-
-            return destination;
+            // .netcore3.1 changed its SignalR implementation and relys on the below for serialization
+            return JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(source));
         }
     }
 }

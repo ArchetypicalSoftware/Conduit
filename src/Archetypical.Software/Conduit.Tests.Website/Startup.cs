@@ -50,7 +50,7 @@ namespace Conduit.Tests.Website
                     .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(x => x.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddConduit();
         }
@@ -95,7 +95,7 @@ namespace Conduit.Tests.Website
     {
         public SomeSubscriptionObject Build(HubCallerContext context)
         {
-            // Logic to build 
+            // Logic to build
             return new SomeSubscriptionObject();
         }
     }
