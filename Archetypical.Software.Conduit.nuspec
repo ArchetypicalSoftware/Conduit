@@ -8,7 +8,9 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Conduit connects browsers and .NET Core applications via signalR utilizing strongly typed payloads and enables server-side message filtering based upon client data.</description>
         <dependencies>
-            <dependency id="Microsoft.Extensions.Logging" version="2.1.1" />
+            <dependency id="Microsoft.Extensions.Logging" version="2.2.1" />
+            <dependency id="Microsoft.AspNetCore.SignalR" version="1.1.0" />
+            <dependency id="System.Text.Json" version="5.0.1" />
        </dependencies>
        <iconUrl>https://archetypical.software/images/conduit.png</iconUrl>
        <copyright>© Archetypical Software. All rights reserved.</copyright>
