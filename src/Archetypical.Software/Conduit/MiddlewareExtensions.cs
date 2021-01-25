@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Archetypical.Software.Conduit
 {
@@ -9,10 +10,12 @@ namespace Archetypical.Software.Conduit
     {
         public static IApplicationBuilder UseConduit(this IApplicationBuilder builder, Action<ConduitOptions> options)
         {
-            var opt = new ConduitOptions { Conduit = builder.ApplicationServices.GetService<Conduit>() };
+            var opt = new ConduitOptions
+            {
+                Conduit = builder.ApplicationServices.GetService<Conduit>(),
+            };
 
             options(opt);
-
             opt.Conduit.CleanupTaskInterval = opt.CleanupTaskInterval;
             opt.Conduit.MaxConnectionLifetime = opt.MaxConnectionLifetime;
 
@@ -31,7 +34,7 @@ namespace Archetypical.Software.Conduit
 
         public static void AddConduit(this IServiceCollection services, Action<HubOptions> signalROptions = null)
         {
-            services.Add(ServiceDescriptor.Singleton(new Conduit()));
+            services.AddSingleton<Conduit>();
 
             if (signalROptions != null)
             {

@@ -110,6 +110,7 @@ namespace Archetypical.Software.Conduit
 
             if (ids.Any())
             {
+                _conduit._logger.LogDebug($"Sending {typeof(TPayload).Name} to connections {string.Join(",", ids)}");
                 return _conduit.Clients?.Clients(ids).SendAsync(typeof(TPayload).Name, payload);
             }
 
@@ -143,7 +144,7 @@ namespace Archetypical.Software.Conduit
     /// </summary>
     public class Conduit : Hub
     {
-        internal readonly ILogger<Conduit> _logger;
+        internal ILogger<Conduit> _logger;
 
         public Conduit(ILogger<Conduit> logger)
         {
