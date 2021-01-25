@@ -21,10 +21,10 @@ namespace Archetypical.Software.Conduit
                 routes.MapHub<Conduit>("/conduit");
             });
 
-            if(opt.CleanupTaskEnabled)
+            if (opt.CleanupTaskEnabled)
             {
                 opt.Conduit.StartCleanupTask();
-            }            
+            }
 
             return builder.UseMiddleware<ConduitMiddleware>();
         }

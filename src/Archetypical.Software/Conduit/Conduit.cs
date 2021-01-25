@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Archetypical.Software.Conduit
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <typeparam name="TFilter"></typeparam>
     public class Conduit<TFilter> : IConduit where TFilter : class, new()
@@ -25,7 +27,7 @@ namespace Archetypical.Software.Conduit
             {
                 ConnectionId = connectionId;
                 Filter = filter;
-                CreatedDate = DateTime.Now; 
+                CreatedDate = DateTime.Now;
             }
 
             public string ConnectionId { get; }
@@ -33,9 +35,10 @@ namespace Archetypical.Software.Conduit
             public TFilter Filter { get; set; }
         }
 
-        #endregion
+        #endregion ConnectionFilterPair
 
         private static Conduit _conduit;
+        private readonly ILogger<Conduit> _logger;
         private static ConcurrentDictionary<string, ConnectionFilterPair> ConnectionFilterMap = new ConcurrentDictionary<string, ConnectionFilterPair>();
 
         private IConduitFilterFactory<TFilter> FilterFactory { get; }
@@ -45,18 +48,22 @@ namespace Archetypical.Software.Conduit
         /// </summary>
         /// <param name="filterFactory">Filter factory that creates object to evaluate</param>
         /// <param name="conduit">Conduit instance</param>
-        public Conduit(IConduitFilterFactory<TFilter> filterFactory, Conduit conduit)
+        public Conduit(IConduitFilterFactory<TFilter> filterFactory, Conduit conduit, ILogger<Conduit> logger)
         {
             FilterFactory = filterFactory;
             _conduit = conduit;
+            _logger = logger;
 
             var eventKey = typeof(TFilter).Name;
-
+            _logger.LogInformation($"Registering Filter for {eventKey}");
             _conduit.FilterActions.Add(eventKey, (dynamic, connectionId) =>
             {
                 var mappedFilter = Mapper<TFilter>.Map(dynamic) as TFilter;
+                if (_logger.IsEnabled(LogLevel.Trace))
+                    _logger.LogTrace($"registering filter for {JsonSerializer.Serialize(mappedFilter)}");
                 var pair = new ConnectionFilterPair(connectionId, mappedFilter);
-                var current = ConnectionFilterMap.AddOrUpdate(connectionId, pair, (x,y) => pair);
+                var current = ConnectionFilterMap.AddOrUpdate(connectionId, pair, (x, y) => pair);
+                _logger.LogDebug($"Mapped connection ({current.ConnectionId}) with filter [{current.Filter}]");
             });
         }
 
@@ -85,14 +92,14 @@ namespace Archetypical.Software.Conduit
 
         /// <summary>
         /// Call to send a payload to a filtered set of connected users
-        /// </summary>        
+        /// </summary>
         /// <param name="clientSelector">Predicate used to filter which users to send a payload to</param>
         /// <param name="payload">The payload object to send. The payload class name (not full name) will be the methodName client-side.</param>
         /// <returns></returns>
         public static Task SendAsync<TPayload>(Predicate<TFilter> clientSelector, TPayload payload)
         {
             var filterType = typeof(TFilter).Name;
-            if(!_conduit.FilterActions.ContainsKey(filterType))
+            if (!_conduit.FilterActions.ContainsKey(filterType))
             {
                 throw new NotSupportedException($"There is no Conduit<{filterType}> registered on the server");
             }
@@ -108,7 +115,7 @@ namespace Archetypical.Software.Conduit
 
             return Task.CompletedTask;
         }
-        
+
         /// <summary>
         /// Cleans up any connections that have existed outside the max connection lifetime
         /// </summary>
@@ -132,16 +139,23 @@ namespace Archetypical.Software.Conduit
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class Conduit : Hub
     {
+        internal readonly ILogger<Conduit> _logger;
+
+        public Conduit(ILogger<Conduit> logger)
+        {
+            _logger = logger;
+        }
+
         internal List<IConduit> Children = new List<IConduit>();
 
         /// <summary>
         /// Dictionary of filter actions to be called on a new filter from client-side
         /// </summary>
-        protected internal Dictionary<string, Action<dynamic, string>> FilterActions = new Dictionary<string, Action<dynamic, string>>(StringComparer.CurrentCultureIgnoreCase);        
+        protected internal Dictionary<string, Action<dynamic, string>> FilterActions = new Dictionary<string, Action<dynamic, string>>(StringComparer.CurrentCultureIgnoreCase);
 
         /// <summary>
         /// The max lifetime of a connection to monitor
@@ -165,14 +179,14 @@ namespace Archetypical.Software.Conduit
         /// </summary>
         public void StartCleanupTask()
         {
-            if(CleanUpTask == null)
+            if (CleanUpTask == null)
             {
                 CleanUpTask = Task.Run(async () =>
                 {
                     while (true)
                     {
                         await Task.Delay(CleanupTaskInterval);
-
+                        _logger.LogInformation("Kicking off cleanup tasks...");
                         Children.ForEach(conduit => conduit.Cleanup(MaxConnectionLifetime));
                     }
                 });
@@ -208,6 +222,7 @@ namespace Archetypical.Software.Conduit
         /// <returns></returns>
         public void ApplyFilter(string filterName, ExpandoObject filter)
         {
+            _logger.LogInformation($"New filter requested for [{filterName}]...");
             if (FilterActions.ContainsKey(filterName))
             {
                 var del = FilterActions[filterName];
