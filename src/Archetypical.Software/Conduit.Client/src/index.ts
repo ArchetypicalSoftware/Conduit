@@ -30,10 +30,11 @@ export class Conduit {
   /**
    * Creates an instance of Conduit
    * @param {(IConnectionConfig | null)} [config]
+   * @param {(string | null)} [baseUrl]
    * @memberof Conduit
    */
-  constructor(config?: IConnectionConfig | null) {
-    this.connection = new AutoHubConnection('/conduit', config);
+  constructor(config?: IConnectionConfig | null, baseUrl?:string|null) {
+    this.connection = new AutoHubConnection(baseUrl+'/conduit', config);
 
     this.filters = [];
     this.hasSubscription = false;

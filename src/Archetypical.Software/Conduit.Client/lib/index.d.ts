@@ -20,9 +20,10 @@ export declare class Conduit {
     /**
      * Creates an instance of Conduit
      * @param {(IConnectionConfig | null)} [config]
+     * @param {(string | null)} [baseUrl]
      * @memberof Conduit
      */
-    constructor(config?: IConnectionConfig | null);
+    constructor(config?: IConnectionConfig | null, baseUrl?: string | null);
     /**
      * Defines a callback for when a payload type is sent from the server
      *
