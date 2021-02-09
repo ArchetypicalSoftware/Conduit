@@ -23,6 +23,8 @@ namespace Archetypical.Software.Conduit
         public ConduitHub(IEnumerable<IConduit> conduits, ILogger<ConduitHub> logger)
         {
             Children = conduits.ToList();
+             foreach(var child in Children)
+                child.Initialize(FilterActions);
             _logger = logger;
         }
 

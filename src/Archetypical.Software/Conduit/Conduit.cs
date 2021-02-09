@@ -53,17 +53,7 @@ namespace Archetypical.Software.Conduit
             _conduit = conduit;
             _logger = logger;
 
-            var eventKey = typeof(TFilter).Name;
-            _logger.LogInformation($"Registering Filter for {eventKey}");
-            _conduit.FilterActions.Add(eventKey, (dynamic, connectionId) =>
-            {
-                var mappedFilter = Mapper<TFilter>.Map(dynamic) as TFilter;
-                if (_logger.IsEnabled(LogLevel.Trace))
-                    _logger.LogTrace($"registering filter for {JsonSerializer.Serialize(mappedFilter)}");
-                var pair = new ConnectionFilterPair(connectionId, mappedFilter);
-                var current = ConnectionFilterMap.AddOrUpdate(connectionId, pair, (x, y) => pair);
-                _logger.LogDebug($"Mapped connection ({current.ConnectionId}) with filter [{current.Filter}]");
-            });
+           
         }
 
         /// <summary>
@@ -135,6 +125,21 @@ namespace Archetypical.Software.Conduit
                     }
                 }
             }
+        }
+
+        public void Initialize(Dictionary<string, Action<dynamic, string>> filterActions)
+        {
+            var eventKey = typeof(TFilter).Name;
+            _logger.LogInformation($"Registering Filter for {eventKey}");
+            filterActions.Add(eventKey, (dynamic, connectionId) =>
+            {
+                var mappedFilter = Mapper<TFilter>.Map(dynamic) as TFilter;
+                if (_logger.IsEnabled(LogLevel.Trace))
+                    _logger.LogTrace($"registering filter for {JsonSerializer.Serialize(mappedFilter)}");
+                var pair = new ConnectionFilterPair(connectionId, mappedFilter);
+                var current = ConnectionFilterMap.AddOrUpdate(connectionId, pair, (x, y) => pair);
+                _logger.LogDebug($"Mapped connection ({current.ConnectionId}) with filter [{current.Filter}]");
+            });
         }
     }
 }
