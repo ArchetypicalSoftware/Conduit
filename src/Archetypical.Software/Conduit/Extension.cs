@@ -11,9 +11,10 @@ namespace Archetypical.Software.Conduit
         /// <param name="src"></param>
         /// <param name="filter"></param>
         /// <typeparam name="T"></typeparam>
-        public static void AddFilter<T>(this ISignalRServerBuilder src, IConduitFilterFactory<T> filter) where T : class, new()
+        public static ISignalRServerBuilder AddFilter<T>(this ISignalRServerBuilder src, IConduitFilterFactory<T> filter) where T : class, new()
         {
             src.Services.AddSingleton(filter);
+            return src;
         }
     }
 
