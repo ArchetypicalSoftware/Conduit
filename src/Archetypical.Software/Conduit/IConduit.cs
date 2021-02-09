@@ -3,7 +3,7 @@ using System;
 
 namespace Archetypical.Software.Conduit
 {
-    internal interface IConduit
+    public interface IConduit
     {
         void OnConnectedAsync(HubCallerContext context);
 

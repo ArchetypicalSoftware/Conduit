@@ -8,12 +8,13 @@ namespace Conduit.Tests.Website.Controllers
 {
     public class HomeController : Controller
     {
-        Archetypical.Software.Conduit.Conduit _conduit;
+        private Archetypical.Software.Conduit.Conduit<SomeSubscriptionObject> _conduit;
 
-        public HomeController(Archetypical.Software.Conduit.Conduit injectedConduit)
+        public HomeController(Archetypical.Software.Conduit.Conduit<SomeSubscriptionObject> injectedConduit)
         {
-            _conduit = injectedConduit;   
+            _conduit = injectedConduit;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -21,7 +22,7 @@ namespace Conduit.Tests.Website.Controllers
 
         public IActionResult TestFilter(string eventKey, string match, string message)
         {
-            Conduit<SomeSubscriptionObject>.SendAsync(t => !string.IsNullOrEmpty(t.Sample) && t.Sample.Equals(match), new SomePayload() { Msg = message });
+            _conduit.SendAsync(t => !string.IsNullOrEmpty(t.Sample) && t.Sample.Equals(match), new SomePayload() { Msg = message });
             return Ok();
         }
 

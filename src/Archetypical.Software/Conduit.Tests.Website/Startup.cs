@@ -1,15 +1,11 @@
 ﻿using Archetypical.Software.Conduit;
-using Conduit.Tests.Website.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Conduit.Tests.Website
 {
@@ -32,26 +28,8 @@ namespace Conduit.Tests.Website
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-
-            //services.AddAuthentication(o =>
-            //    {
-            //        o.DefaultScheme = IdentityConstants.ApplicationScheme;
-            //        o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            //    })
-            //    .AddIdentityCookies(o => { });
-
-            services.AddIdentity<IdentityUser, IdentityRole<string>>(o =>
-                     {
-                         o.Stores.MaxLengthForKeys = 128;
-                     })
-                    .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
             services.AddMvc(x => x.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
+            services.AddSignalR().AddFilter(new SomeSubscriptionObjectFactory()); ;
             services.AddConduit();
         }
 
@@ -70,13 +48,19 @@ namespace Conduit.Tests.Website
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-
-            app.UseConduit(options => options.Conduit.AddFilter(new SomeSubscriptionObjectFactory()));
+            app.UseRouting();
+            app.UseEndpoints(x =>
+            {
+                x.UseConduit(app, options =>
+                {
+                });
+            });
 
             app.UseStaticFiles(new StaticFileOptions()
             {
                 ServeUnknownFileTypes = true
             });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

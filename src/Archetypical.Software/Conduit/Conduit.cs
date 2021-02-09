@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -37,9 +36,9 @@ namespace Archetypical.Software.Conduit
 
         #endregion ConnectionFilterPair
 
-        private static Conduit _conduit;
-        private readonly ILogger<Conduit> _logger;
-        private static ConcurrentDictionary<string, ConnectionFilterPair> ConnectionFilterMap = new ConcurrentDictionary<string, ConnectionFilterPair>();
+        private readonly ConduitHub _conduit;
+        private readonly ILogger<Conduit<TFilter>> _logger;
+        private static readonly ConcurrentDictionary<string, ConnectionFilterPair> ConnectionFilterMap = new ConcurrentDictionary<string, ConnectionFilterPair>();
 
         private IConduitFilterFactory<TFilter> FilterFactory { get; }
 
@@ -48,7 +47,7 @@ namespace Archetypical.Software.Conduit
         /// </summary>
         /// <param name="filterFactory">Filter factory that creates object to evaluate</param>
         /// <param name="conduit">Conduit instance</param>
-        public Conduit(IConduitFilterFactory<TFilter> filterFactory, Conduit conduit, ILogger<Conduit> logger)
+        public Conduit(IConduitFilterFactory<TFilter> filterFactory, ConduitHub conduit, ILogger<Conduit<TFilter>> logger)
         {
             FilterFactory = filterFactory;
             _conduit = conduit;
@@ -96,7 +95,7 @@ namespace Archetypical.Software.Conduit
         /// <param name="clientSelector">Predicate used to filter which users to send a payload to</param>
         /// <param name="payload">The payload object to send. The payload class name (not full name) will be the methodName client-side.</param>
         /// <returns></returns>
-        public static Task SendAsync<TPayload>(Predicate<TFilter> clientSelector, TPayload payload)
+        public Task SendAsync<TPayload>(Predicate<TFilter> clientSelector, TPayload payload)
         {
             var filterType = typeof(TFilter).Name;
             if (!_conduit.FilterActions.ContainsKey(filterType))
@@ -135,103 +134,6 @@ namespace Archetypical.Software.Conduit
                         ConnectionFilterMap.TryRemove(key, out pair);
                     }
                 }
-            }
-        }
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public class Conduit : Hub
-    {
-        internal ILogger<Conduit> _logger;
-
-        public Conduit(ILogger<Conduit> logger)
-        {
-            _logger = logger;
-        }
-
-        internal List<IConduit> Children = new List<IConduit>();
-
-        /// <summary>
-        /// Dictionary of filter actions to be called on a new filter from client-side
-        /// </summary>
-        protected internal Dictionary<string, Action<dynamic, string>> FilterActions = new Dictionary<string, Action<dynamic, string>>(StringComparer.CurrentCultureIgnoreCase);
-
-        /// <summary>
-        /// The max lifetime of a connection to monitor
-        /// </summary>
-        protected internal TimeSpan MaxConnectionLifetime { get; set; }
-
-        /// <summary>
-        /// How frequently to call Cleanup
-        /// </summary>
-        protected internal TimeSpan CleanupTaskInterval { get; set; }
-
-        private Task CleanUpTask { get; set; }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public Conduit() { }
-
-        /// <summary>
-        /// Initiates the Cleanup task. This is only here to clean up closed connections that don't call OnDisconnectedAsync
-        /// </summary>
-        public void StartCleanupTask()
-        {
-            if (CleanUpTask == null)
-            {
-                CleanUpTask = Task.Run(async () =>
-                {
-                    while (true)
-                    {
-                        await Task.Delay(CleanupTaskInterval);
-                        _logger.LogInformation("Kicking off cleanup tasks...");
-                        Children.ForEach(conduit => conduit.Cleanup(MaxConnectionLifetime));
-                    }
-                });
-            }
-        }
-
-        /// <summary>
-        /// OnConnected handler
-        /// </summary>
-        /// <returns></returns>
-        public override Task OnConnectedAsync()
-        {
-            Children.ForEach(conduit => conduit.OnConnectedAsync(Context));
-            return base.OnConnectedAsync();
-        }
-
-        /// <summary>
-        /// OnDisconnected handler
-        /// </summary>
-        /// <param name="exception"></param>
-        /// <returns></returns>
-        public override Task OnDisconnectedAsync(Exception exception)
-        {
-            Children.ForEach(conduit => conduit.OnDisconnectedAsync(Context));
-            return base.OnDisconnectedAsync(exception);
-        }
-
-        /// <summary>
-        /// Applies a filter from client-side. Replaces any existng filter previously assigned.
-        /// </summary>
-        /// <param name="filterName"></param>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        public void ApplyFilter(string filterName, ExpandoObject filter)
-        {
-            _logger.LogInformation($"New filter requested for [{filterName}]...");
-            if (FilterActions.ContainsKey(filterName))
-            {
-                var del = FilterActions[filterName];
-                del.Invoke(filter, Context.ConnectionId);
-            }
-            else
-            {
-                throw new NotSupportedException($"There is no Conduit<{filterName}> registered on the server");
             }
         }
     }

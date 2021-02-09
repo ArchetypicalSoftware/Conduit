@@ -1,17 +1,33 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Archetypical.Software.Conduit
 {
     public static class Extension
     {
-        public static void AddFilter<T>(this Conduit src, IConduitFilterFactory<T> filter = null) where T : class, new()
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="filter"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void AddFilter<T>(this ISignalRServerBuilder src, IConduitFilterFactory<T> filter) where T : class, new()
         {
-            src.Children.Add(new Conduit<T>(filter ?? new ClientInitiatedFilter<T>(), src, src._logger)); ;
+            src.Services.AddSingleton(filter);
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ClientInitiatedFilter<T> : IConduitFilterFactory<T> where T : class
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public T Build(HubCallerContext context)
         {
             return null;

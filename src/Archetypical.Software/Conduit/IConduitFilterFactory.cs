@@ -6,8 +6,17 @@ namespace Archetypical.Software.Conduit
     {
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IConduitFilterFactory<T> : IConduitFilterFactory
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         T Build(HubCallerContext context);
     }
 }

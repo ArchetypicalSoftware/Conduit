@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Archetypical.Software.Conduit</name>
+    </assembly>
+    <members>
+        <member name="T:Archetypical.Software.Conduit.Conduit`1">
+             <summary>
+            
+             </summary>
+             <typeparam name="TFilter"></typeparam>
+        </member>
+        <member name="T:Archetypical.Software.Conduit.Conduit`1.ConnectionFilterPair">
+            <summary>
+            POCO to house the connnection filter data
+            </summary>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.Conduit`1.#ctor(Archetypical.Software.Conduit.IConduitFilterFactory{`0},Archetypical.Software.Conduit.ConduitHub,Microsoft.Extensions.Logging.ILogger{Archetypical.Software.Conduit.Conduit{`0}})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="filterFactory">Filter factory that creates object to evaluate</param>
+            <param name="conduit">Conduit instance</param>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.Conduit`1.OnConnectedAsync(Microsoft.AspNetCore.SignalR.HubCallerContext)">
+            <summary>
+            OnConnected handler
+            </summary>
+            <param name="context">The connection context</param>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.Conduit`1.OnDisconnectedAsync(Microsoft.AspNetCore.SignalR.HubCallerContext)">
+            <summary>
+            OnDisconnected handler
+            </summary>
+            <param name="context">The connection context</param>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.Conduit`1.SendAsync``1(System.Predicate{`0},``0)">
+            <summary>
+            Call to send a payload to a filtered set of connected users
+            </summary>
+            <param name="clientSelector">Predicate used to filter which users to send a payload to</param>
+            <param name="payload">The payload object to send. The payload class name (not full name) will be the methodName client-side.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.Conduit`1.Cleanup(System.TimeSpan)">
+            <summary>
+            Cleans up any connections that have existed outside the max connection lifetime
+            </summary>
+            <param name="maxConnectionLifetime">Max lifetime of the connection</param>
+        </member>
+        <member name="T:Archetypical.Software.Conduit.ConduitHub">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.ConduitHub.#ctor(System.Collections.Generic.IEnumerable{Archetypical.Software.Conduit.IConduit},Microsoft.Extensions.Logging.ILogger{Archetypical.Software.Conduit.ConduitHub})">
+             <summary>
+            
+             </summary>
+             <param name="conduits"></param>
+             <param name="logger"></param>
+        </member>
+        <member name="F:Archetypical.Software.Conduit.ConduitHub.FilterActions">
+            <summary>
+            Dictionary of filter actions to be called on a new filter from client-side
+            </summary>
+        </member>
+        <member name="P:Archetypical.Software.Conduit.ConduitHub.MaxConnectionLifetime">
+            <summary>
+            The max lifetime of a connection to monitor
+            </summary>
+        </member>
+        <member name="P:Archetypical.Software.Conduit.ConduitHub.CleanupTaskInterval">
+            <summary>
+            How frequently to call Cleanup
+            </summary>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.ConduitHub.StartCleanupTask">
+            <summary>
+            Initiates the Cleanup task. This is only here to clean up closed connections that don't call OnDisconnectedAsync
+            </summary>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.ConduitHub.OnConnectedAsync">
+            <summary>
+            OnConnected handler
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.ConduitHub.OnDisconnectedAsync(System.Exception)">
+            <summary>
+            OnDisconnected handler
+            </summary>
+            <param name="exception"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.ConduitHub.ApplyFilter(System.String,System.Dynamic.ExpandoObject)">
+            <summary>
+            Applies a filter from client-side. Replaces any existng filter previously assigned.
+            </summary>
+            <param name="filterName"></param>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.Extension.AddFilter``1(Microsoft.AspNetCore.SignalR.ISignalRServerBuilder,Archetypical.Software.Conduit.IConduitFilterFactory{``0})">
+             <summary>
+            
+             </summary>
+             <param name="src"></param>
+             <param name="filter"></param>
+             <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:Archetypical.Software.Conduit.ClientInitiatedFilter`1">
+             <summary>
+            
+             </summary>
+             <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.ClientInitiatedFilter`1.Build(Microsoft.AspNetCore.SignalR.HubCallerContext)">
+             <summary>
+            
+             </summary>
+             <param name="context"></param>
+             <returns></returns>
+        </member>
+        <member name="T:Archetypical.Software.Conduit.IConduitFilterFactory`1">
+             <summary>
+            
+             </summary>
+             <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.IConduitFilterFactory`1.Build(Microsoft.AspNetCore.SignalR.HubCallerContext)">
+             <summary>
+            
+             </summary>
+             <param name="context"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Archetypical.Software.Conduit.MiddlewareExtensions.AddConduit(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.AspNetCore.SignalR.HubOptions})">
+             <summary>
+            
+             </summary>
+             <param name="services"></param>
+             <param name="signalROptions"></param>
+             <returns></returns>
+        </member>
+    </members>
+</doc>
